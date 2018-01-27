@@ -58,6 +58,12 @@ def vm_cpus
   $vb_cpus.nil? ? $vm_cpus : $vb_cpus
 end
 
+require 'securerandom'
+
+random_string1 = SecureRandom.hex
+random_string2 = SecureRandom.hex
+cluster_init_token = "#{random_string1[0..5]}.#{random_string2[0..15]}"
+
 Vagrant.configure("2") do |config|
   # always use Vagrants insecure key
   config.ssh.insert_key = false
@@ -168,6 +174,12 @@ Vagrant.configure("2") do |config|
           config.ignition.path = 'config.ign'
         end
       end
+
+      config.vm.provision 'shell' do |s|
+        s.args = [ip, cluster_init_token]
+        s.path = 'setup.sh'
+      end
+
     end
   end
 end
