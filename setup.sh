@@ -15,10 +15,10 @@ getent hosts $NODE_IP | grep $NODE_IP | grep $HOSTNAME || {
 }
 
 NODE_IP_START=${NODE_IP:0:-1}
-echo "${NODE_IP_START}1   kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local" >> /etc/hosts
 for N in 1 2 3 4 5 6 7 8 9; do
   echo "${NODE_IP_START}$N   youkube-0$N" >> /etc/hosts
 done
+echo "${NODE_IP_START}1   kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local" >> /etc/hosts
 
 set -x
 ip addr
