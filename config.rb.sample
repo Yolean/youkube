@@ -1,3 +1,6 @@
+# https://kubernetes.io/docs/setup/independent/install-kubeadm/#before-you-begin currently says 1576.4.0
+$update_channel='stable'
+
 # Size of the CoreOS cluster created by Vagrant
 $num_instances=1
 
