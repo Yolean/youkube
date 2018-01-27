@@ -1,3 +1,80 @@
+# Youkube
+
+We've tried to make this setup as generic as possible. Some unevitable choices are documented below.
+
+Run like so:
+```bash
+vagrant up
+export KUBECONFIG=$(pwd)/kubeconfig.yml
+vagrant ssh youkube-01 -c 'sudo cat /etc/kubernetes/admin.conf' > $KUBECONFIG
+```
+
+## Hosts files
+
+No clear directions in [kubeadm](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/) docs so using trial and error we ended up with:
+
+ * A record for the node's hostname mapping to the external IP, instead of default 127.0.0.1.
+ * Added a record for all the names that `kubeadm init` report the self-signed cert to be generated for.
+ * One record per other node.
+
+## Flannel
+
+We just happened to select Flannel for pod networking, gotta have one.
+
+Initially services would not work. You'd get a response on the expected port only if addressing the node that the pod lived on.
+That turned out to be because flannel by default binds to eth0, which is Vagrant's interface for ssh etc.
+We found the flanneld flag `--iface=eth1` to change that.
+
+## Schedulable master
+
+We allow regular pods to be [scheduled](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#master-isolation) on the master.
+This is so we can run a multi-node cluster on 2x4GB memory.
+
+## IP addresses
+
+Hard coded 192.168.38.1X, for no particular reason, where X is the node number.
+
+## Node Port range
+
+We allow NodePort to be anything from port 80 and up. This is so we can host HTTP(S) on standard ports without simulating a LoadBalancer.
+
+A sample pod can be created using `kubectl create -f perimeter-test.yml`.
+During pod network troubleshooting we also had to check that `kubectl -n channel exec test -- curl http://perimeter.channel/` works.
+
+Avoid [kubernetes ports](https://kubernetes.io/docs/setup/independent/install-kubeadm/#check-required-ports) when setting `nodePort:`.
+
+## Local Volumes
+
+Example for two nodes:
+
+```
+# https://github.com/Yolean/kubernetes-mysql-cluster/tree/scale-2, but first:
+vagrant ssh youkube-01 --no-tty -c 'sudo mkdir -p /mnt/local-storage/mysql-mariadb-0'
+vagrant ssh youkube-02 --no-tty -c 'sudo mkdir -p /mnt/local-storage/mysql-mariadb-1'
+kubectl apply -f local-volume/mysql-cluster/
+# and now that the PVC is created (with matchLabels), apply the manifests from kubernetes-mysql-cluster
+
+# https://github.com/Yolean/kubernetes-kafka/tree/scale-2
+vagrant ssh youkube-01 -c 'sudo mkdir -p /mnt/local-storage/data-pzoo-0'
+vagrant ssh youkube-02 -c 'sudo mkdir -p /mnt/local-storage/data-pzoo-1'
+vagrant ssh youkube-01 -c 'sudo mkdir -p /mnt/local-storage/data-kafka-0'
+vagrant ssh youkube-02 -c 'sudo mkdir -p /mnt/local-storage/data-kafka-1'
+kubectl apply -f local-volume/kafka/
+
+# https://github.com/Yolean/kubernetes-monitoring
+vagrant ssh youkube-02 -c 'sudo mkdir -p /mnt/local-storage/prometheus-custom-db-prometheus-custom-0'
+vagrant ssh youkube-01 -c 'sudo mkdir -p /mnt/local-storage/prometheus-k8s-db-prometheus-k8s-0'
+vagrant ssh youkube-02 -c 'sudo mkdir -p /mnt/local-storage/prometheus-k8s-db-prometheus-k8s-1'
+```
+
+## Heapster
+
+The standard "addon" with influxdb should work, but an alternative is https://github.com/Yolean/kubernetes-kafka/pull/120.
+
+---
+
+The remainder of this readme is from the forked https://github.com/coreos/coreos-vagrant
+
 # CoreOS Vagrant
 
 This repo provides a template Vagrantfile to create a CoreOS virtual machine using the VirtualBox software hypervisor.

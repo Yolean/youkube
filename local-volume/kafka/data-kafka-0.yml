@@ -1,0 +1,45 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: kafka
+  name: data-kafka-0
+  namespace: kafka
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200Gi
+  storageClassName: kafka-broker
+  selector:
+    matchLabels:
+      pod-name: kafka-0
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: data-kafka-0
+  labels:
+    pod-name: kafka-0
+  annotations:
+    "volume.alpha.kubernetes.io/node-affinity": '{
+      "requiredDuringSchedulingIgnoredDuringExecution": {
+        "nodeSelectorTerms": [
+          { "matchExpressions": [
+              { "key": "kubernetes.io/hostname",
+                "operator": "In",
+                "values": ["youkube-01"]
+              }
+          ]}
+        ]}}'
+spec:
+  capacity:
+    storage: 200Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: kafka-broker
+  local:
+    path: /mnt/local-storage/data-kafka-0
