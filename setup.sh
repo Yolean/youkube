@@ -61,7 +61,7 @@ if [ "$NODE_IP" == "${NODE_IP_START}1" ]; then
   sed -i.bak 's|"/opt/bin/flanneld",|"/opt/bin/flanneld", "--iface=eth1",|' /vagrant/kube-flannel.yml
   kubectl apply -f /vagrant/kube-flannel.yml
 else
-  # TODO get the actual join command from master
+  # TODO get the actual join command from master, through /vagrant maybe if we can assume read-write shared folder
   #kubeadm join --token="$CLUSTER_TOKEN" kubernetes:6443 --discovery-token-ca-cert-hash sha256:...
   # For now "using token-based discovery without DiscoveryTokenCACertHashes can be unsafe"
   kubeadm join --token="$CLUSTER_TOKEN" kubernetes:6443 --discovery-token-unsafe-skip-ca-verification
