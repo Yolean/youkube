@@ -14,12 +14,10 @@ getent hosts $NODE_IP | grep $NODE_IP | grep $HOSTNAME || {
   exit 1
 }
 
-sed -i 's/127.*yolean/#\0/' /etc/hosts
-
 NODE_IP_START=${NODE_IP:0:-1}
 echo "${NODE_IP_START}1   kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local" >> /etc/hosts
 for N in 1 2 3 4 5 6 7 8 9; do
-  echo "${NODE_IP_START}$N   yolean-k8s-$N" >> /etc/hosts
+  echo "${NODE_IP_START}$N   youkube-0$N" >> /etc/hosts
 done
 
 set -x
@@ -29,34 +27,26 @@ ip route
 #ip route replace default via 192.168.38.1 dev eth1
 set +x
 
-yum install -y ntp
-chkconfig ntpd on
-service ntpd start
+timedatectl
 
 ### The rest is basically https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
 # (but with a fix for flannel to use eth1)
 
-yum install -y docker
-setenforce 0
+CNI_VERSION="v0.6.0"
+mkdir -p /opt/cni/bin
+curl -L "https://github.com/containernetworking/plugins/releases/download/${CNI_VERSION}/cni-plugins-amd64-${CNI_VERSION}.tgz" | tar -C /opt/cni/bin -xz
 
-systemctl enable docker && systemctl start docker
-sysctl net.bridge.bridge-nf-call-iptables
-cat <<EOF >  /etc/sysctl.d/k8s.conf
-net.bridge.bridge-nf-call-ip6tables = 1
-net.bridge.bridge-nf-call-iptables = 1
-EOF
-sysctl --system
+RELEASE="$(curl -sSL https://dl.k8s.io/release/stable.txt)"
+echo "Kubernetes release: $RELEASE"
 
-cat <<EOF > /etc/yum.repos.d/kubernetes.repo
-[kubernetes]
-name=Kubernetes
-baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-enabled=1
-gpgcheck=1
-repo_gpgcheck=1
-gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-EOF
-yum install -y kubelet kubeadm kubectl
+mkdir -p /opt/bin
+cd /opt/bin
+curl -L --remote-name-all https://storage.googleapis.com/kubernetes-release/release/${RELEASE}/bin/linux/amd64/{kubeadm,kubelet,kubectl}
+chmod +x {kubeadm,kubelet,kubectl}
+
+curl -sSL "https://raw.githubusercontent.com/kubernetes/kubernetes/${RELEASE}/build/debs/kubelet.service" | sed "s:/usr/bin:/opt/bin:g" > /etc/systemd/system/kubelet.service
+mkdir -p /etc/systemd/system/kubelet.service.d
+curl -sSL "https://raw.githubusercontent.com/kubernetes/kubernetes/${RELEASE}/build/debs/10-kubeadm.conf" | sed "s:/usr/bin:/opt/bin:g" > /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 systemctl enable kubelet && systemctl start kubelet
 
