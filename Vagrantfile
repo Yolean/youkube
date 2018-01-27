@@ -175,6 +175,7 @@ Vagrant.configure("2") do |config|
         end
       end
 
+      config.vm.provision "file", source: "kubeadm-init-config.yml", destination: "/tmp/kubeadm-init-config.yml"
       config.vm.provision 'shell' do |s|
         s.args = [ip, cluster_init_token]
         s.path = 'setup.sh'
