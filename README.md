@@ -43,6 +43,30 @@ During pod network troubleshooting we also had to check that `kubectl -n channel
 
 Avoid [kubernetes ports](https://kubernetes.io/docs/setup/independent/install-kubeadm/#check-required-ports) when setting `nodePort:`.
 
+## Local Volumes
+
+Example for two nodes:
+
+```
+# https://github.com/Yolean/kubernetes-mysql-cluster/tree/scale-2, but first:
+vagrant ssh youkube-01 --no-tty -c 'sudo mkdir -p /mnt/local-storage/mysql-mariadb-0'
+vagrant ssh youkube-02 --no-tty -c 'sudo mkdir -p /mnt/local-storage/mysql-mariadb-1'
+kubectl apply -f local-volume/mysql-cluster/
+# and now that the PVC is created (with matchLabels), apply the manifests from kubernetes-mysql-cluster
+
+# https://github.com/Yolean/kubernetes-kafka/tree/scale-2
+vagrant ssh youkube-01 -c 'sudo mkdir -p /mnt/local-storage/data-pzoo-0'
+vagrant ssh youkube-02 -c 'sudo mkdir -p /mnt/local-storage/data-pzoo-1'
+vagrant ssh youkube-01 -c 'sudo mkdir -p /mnt/local-storage/data-kafka-0'
+vagrant ssh youkube-02 -c 'sudo mkdir -p /mnt/local-storage/data-kafka-1'
+kubectl apply -f local-volume/kafka/
+
+# https://github.com/Yolean/kubernetes-monitoring
+vagrant ssh youkube-02 -c 'sudo mkdir -p /mnt/local-storage/prometheus-custom-db-prometheus-custom-0'
+vagrant ssh youkube-01 -c 'sudo mkdir -p /mnt/local-storage/prometheus-k8s-db-prometheus-k8s-0'
+vagrant ssh youkube-02 -c 'sudo mkdir -p /mnt/local-storage/prometheus-k8s-db-prometheus-k8s-1'
+```
+
 ## Heapster
 
 The standard "addon" with influxdb should work, but an alternative is https://github.com/Yolean/kubernetes-kafka/pull/120.

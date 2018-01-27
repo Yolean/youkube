@@ -1,0 +1,46 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: zookeeper
+    storage: persistent
+  name: data-pzoo-0
+  namespace: kafka
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: kafka-zookeeper
+  selector:
+    matchLabels:
+      pod-name: pzoo-0
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: data-pzoo-0
+  labels:
+    pod-name: pzoo-0
+  annotations:
+    "volume.alpha.kubernetes.io/node-affinity": '{
+      "requiredDuringSchedulingIgnoredDuringExecution": {
+        "nodeSelectorTerms": [
+          { "matchExpressions": [
+              { "key": "kubernetes.io/hostname",
+                "operator": "In",
+                "values": ["youkube-01"]
+              }
+          ]}
+        ]}}'
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: kafka-zookeeper
+  local:
+    path: /mnt/local-storage/data-pzoo-0
