@@ -8,7 +8,8 @@ networking:
   # Flannel
   podSubnet: 10.244.0.0/16
 featureGates:
-  SelfHosting: true
+  #SelfHosting: true
+  #StoreCertsInSecrets: true
   #HighAvailability: true
   #PersistentLocalVolumes: true
   #VolumeScheduling: true
