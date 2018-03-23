@@ -51,14 +51,17 @@ Example for two nodes:
 # https://github.com/Yolean/kubernetes-mysql-cluster/tree/scale-2, but first:
 vagrant ssh youkube-01 --no-tty -c 'sudo mkdir -p /mnt/local-storage/mysql-mariadb-0'
 vagrant ssh youkube-02 --no-tty -c 'sudo mkdir -p /mnt/local-storage/mysql-mariadb-1'
+vagrant ssh youkube-03 --no-tty -c 'sudo mkdir -p /mnt/local-storage/mysql-mariadb-2'
 kubectl apply -f local-volume/mysql-cluster/
 # and now that the PVC is created (with matchLabels), apply the manifests from kubernetes-mysql-cluster
 
 # https://github.com/Yolean/kubernetes-kafka/tree/scale-2
 vagrant ssh youkube-01 --no-tty -c 'sudo mkdir -p /mnt/local-storage/data-pzoo-0'
 vagrant ssh youkube-02 --no-tty -c 'sudo mkdir -p /mnt/local-storage/data-pzoo-1'
+vagrant ssh youkube-03 --no-tty -c 'sudo mkdir -p /mnt/local-storage/data-pzoo-2'
 vagrant ssh youkube-01 --no-tty -c 'sudo mkdir -p /mnt/local-storage/data-kafka-0'
 vagrant ssh youkube-02 --no-tty -c 'sudo mkdir -p /mnt/local-storage/data-kafka-1'
+vagrant ssh youkube-03 --no-tty -c 'sudo mkdir -p /mnt/local-storage/data-kafka-2'
 kubectl apply -f local-volume/kafka/
 
 # https://github.com/Yolean/kubernetes-monitoring
