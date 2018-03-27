@@ -24,23 +24,21 @@ metadata:
   name: data-pzoo-2
   labels:
     pod-name: pzoo-2
-  annotations:
-    "volume.alpha.kubernetes.io/node-affinity": '{
-      "requiredDuringSchedulingIgnoredDuringExecution": {
-        "nodeSelectorTerms": [
-          { "matchExpressions": [
-              { "key": "kubernetes.io/hostname",
-                "operator": "In",
-                "values": ["youkube-03"]
-              }
-          ]}
-        ]}}'
 spec:
   capacity:
     storage: 1Gi
+  volumeMode: Filesystem
   accessModes:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: kafka-zookeeper
   local:
     path: /mnt/local-storage/data-pzoo-2
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - youkube-03
