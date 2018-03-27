@@ -1,7 +1,7 @@
 apiVersion: kubeadm.k8s.io/v1alpha1
 kind: MasterConfiguration
 token: #token#
-tokenTTL: 999999h
+tokenTTL: 1h
 api:
   advertiseAddress: 172.17.8.101
 networking:
@@ -11,16 +11,13 @@ featureGates:
   #SelfHosting: true
   #StoreCertsInSecrets: true
   #HighAvailability: true
-  #PersistentLocalVolumes: true
-  #VolumeScheduling: true
-  #MountPropagation: true
 apiServerExtraArgs:
   # https://kubernetes.io/docs/reference/generated/kube-apiserver/
   service-node-port-range: 80-32767
-  feature-gates: "PersistentLocalVolumes=true,VolumeScheduling=true,MountPropagation=true"
+  feature-gates: ""
 controllerManagerExtraArgs:
   # https://kubernetes.io/docs/reference/generated/kube-controller-manager/
-  feature-gates: "PersistentLocalVolumes=true,VolumeScheduling=true,MountPropagation=true"
+  feature-gates: ""
 schedulerExtraArgs:
   # https://kubernetes.io/docs/reference/generated/kube-scheduler/
-  feature-gates: "PersistentLocalVolumes=true,VolumeScheduling=true,MountPropagation=true"
+  feature-gates: ""
