@@ -1,0 +1,43 @@
+# Cuts SelfHosted's default resource limits to a tenth, based on kubectl get -o yaml
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kube-dns
+  namespace: kube-system
+spec:
+  template:
+    spec:
+      containers:
+      - name: kubedns
+        resources:
+          limits:
+            memory: 17Mi
+          requests:
+            cpu: 10m
+            memory: 7Mi
+      - name: dnsmasq
+        resources:
+          requests:
+            cpu: 15m
+            memory: 2Mi
+      - name: sidecar
+        resources:
+          requests:
+            cpu: 1m
+            memory: 2Mi
+---
+## apiserver fails to restart after apply -f
+# apiVersion: extensions/v1beta1
+# kind: DaemonSet
+# metadata:
+#   name: self-hosted-kube-apiserver
+#   namespace: kube-system
+# spec:
+#   template:
+#     spec:
+#       containers:
+#       - name: kube-apiserver
+#         resources:
+#           requests:
+#             cpu: 25m
