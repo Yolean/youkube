@@ -8,9 +8,9 @@ networking:
   # Flannel
   podSubnet: 10.244.0.0/16
 featureGates:
-  #SelfHosting: true
+  SelfHosting: true
   #StoreCertsInSecrets: true
-  #HighAvailability: true
+  HighAvailability: true
 apiServerExtraArgs:
   # https://kubernetes.io/docs/reference/generated/kube-apiserver/
   service-node-port-range: 80-32767
