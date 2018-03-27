@@ -1,4 +1,5 @@
 # Cuts SelfHosted's default resource limits to a tenth, based on kubectl get -o yaml
+# An alternative would be to add an extra vm_cpus to machine 1
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
