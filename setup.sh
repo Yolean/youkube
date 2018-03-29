@@ -32,7 +32,7 @@ timedatectl
 ### The rest is basically https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
 # (but with a fix for flannel to use eth1)
 
-CNI_VERSION="v0.7.0"
+CNI_VERSION="v0.6.0"
 mkdir -p /opt/cni/bin
 curl -sL "https://github.com/containernetworking/plugins/releases/download/${CNI_VERSION}/cni-plugins-amd64-${CNI_VERSION}.tgz" | tar -C /opt/cni/bin -xz
 
@@ -55,7 +55,7 @@ if [ "$NODE_IP" == "${NODE_IP_START}1" ]; then
   kubeadm init --config=/tmp/kubeadm-init-config.yml
   export KUBECONFIG=/etc/kubernetes/admin.conf
   kubectl taint nodes --all node-role.kubernetes.io/master-
-  FLANNEL_VERSION=v0.10.0
+  FLANNEL_VERSION=v0.9.1
   curl -s -o /tmp/kube-flannel.yml https://raw.githubusercontent.com/coreos/flannel/$FLANNEL_VERSION/Documentation/kube-flannel.yml
   # use the private interface, ideae from https://crondev.com/kubernetes-installation-kubeadm/
   sed -i.bak 's|"/opt/bin/flanneld",|"/opt/bin/flanneld", "--iface=eth1",|' /tmp/kube-flannel.yml
