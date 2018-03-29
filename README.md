@@ -43,40 +43,24 @@ During pod network troubleshooting we also had to check that `kubectl -n channel
 
 Avoid [kubernetes ports](https://kubernetes.io/docs/setup/independent/install-kubeadm/#check-required-ports) when setting `nodePort:`.
 
+## CoreOS version
+
+The [recommended version](https://kubernetes.io/docs/setup/independent/install-kubeadm/#before-you-begin) is no longer latest,
+but prior to vagrant up you can select version using for example:
+
+```
+vagrant box add --name=coreos-stable --box-version=1576.5.0 https://stable.release.core-os.net/amd64-usr/1576.5.0/coreos_production_vagrant_virtualbox.json
+```
+
 ## Local Volumes
 
-Example for two nodes:
+The [./local-volumes](./local-volumes) folder contain sample `apply -f` manifests for stuff like:
+ * https://github.com/Yolean/kubernetes-mysql-cluster/tree/scale-2
+ * https://github.com/Yolean/kubernetes-kafka/tree/scale-2
+ * https://github.com/Yolean/kubernetes-monitoring
+ * https://hub.kubeapps.com/charts/stable/minio with --namespace blobs --name repos
 
-```
-# https://github.com/Yolean/kubernetes-mysql-cluster/tree/scale-2, but first:
-vagrant ssh youkube-01 --no-tty -c 'sudo mkdir -p /mnt/local-storage/mysql-mariadb-0'
-vagrant ssh youkube-02 --no-tty -c 'sudo mkdir -p /mnt/local-storage/mysql-mariadb-1'
-vagrant ssh youkube-03 --no-tty -c 'sudo mkdir -p /mnt/local-storage/mysql-mariadb-2'
-kubectl apply -f local-volume/mysql-cluster/
-# and now that the PVC is created (with matchLabels), apply the manifests from kubernetes-mysql-cluster
-
-# https://github.com/Yolean/kubernetes-kafka/tree/scale-2
-vagrant ssh youkube-01 --no-tty -c 'sudo mkdir -p /mnt/local-storage/data-pzoo-0'
-vagrant ssh youkube-02 --no-tty -c 'sudo mkdir -p /mnt/local-storage/data-pzoo-1'
-vagrant ssh youkube-03 --no-tty -c 'sudo mkdir -p /mnt/local-storage/data-pzoo-2'
-vagrant ssh youkube-01 --no-tty -c 'sudo mkdir -p /mnt/local-storage/data-kafka-0'
-vagrant ssh youkube-02 --no-tty -c 'sudo mkdir -p /mnt/local-storage/data-kafka-1'
-vagrant ssh youkube-03 --no-tty -c 'sudo mkdir -p /mnt/local-storage/data-kafka-2'
-kubectl apply -f local-volume/kafka/
-
-# https://github.com/Yolean/kubernetes-monitoring
-vagrant ssh youkube-02 --no-tty -c 'sudo mkdir -p /mnt/local-storage/prometheus-custom-db-prometheus-custom-0'
-vagrant ssh youkube-01 --no-tty -c 'sudo mkdir -p /mnt/local-storage/prometheus-k8s-db-prometheus-k8s-0'
-vagrant ssh youkube-02 --no-tty -c 'sudo mkdir -p /mnt/local-storage/prometheus-k8s-db-prometheus-k8s-1'
-
-# https://hub.kubeapps.com/charts/stable/minio with --namespace blobs --name repos
-vagrant ssh youkube-01 --no-tty -c 'sudo mkdir -p /mnt/local-storage/export-repos-minio-0'
-vagrant ssh youkube-02 --no-tty -c 'sudo mkdir -p /mnt/local-storage/export-repos-minio-1'
-vagrant ssh youkube-01 --no-tty -c 'sudo mkdir -p /mnt/local-storage/export-repos-minio-2'
-vagrant ssh youkube-02 --no-tty -c 'sudo mkdir -p /mnt/local-storage/export-repos-minio-3'
-```
-
-
+The setup.sh sript creates folders for these PVs.
 
 ## Heapster
 

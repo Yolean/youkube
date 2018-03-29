@@ -66,3 +66,14 @@ else
   # For now "using token-based discovery without DiscoveryTokenCACertHashes can be unsafe"
   kubeadm join --token="$CLUSTER_TOKEN" kubernetes:6443 --discovery-token-unsafe-skip-ca-verification
 fi
+
+# Create all volumes on all nodes (we could parse volume affinity yaml but have no time for that)
+function mkvolume {
+  mkdir -p "/mnt/local-storage/$1"
+}
+for N in 0 1 2; do mkvolume mysql-mariadb-$N; done
+for N in 0 1 2; do mkvolume data-pzoo-$N; done
+for N in 0 1 2; do mkvolume data-kafka-$N; done
+for N in 0 1 2 3; do mkvolume export-repos-minio-$N; done
+for N in 0; do mkvolume prometheus-custom-db-prometheus-custom-$N; done
+for N in 0 1; do mkvolume prometheus-k8s-db-prometheus-k8s-0; done
