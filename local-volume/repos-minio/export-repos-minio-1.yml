@@ -1,0 +1,45 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: repos-minio
+  name: export-repos-minio-1
+  namespace: blobs
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: minio
+  selector:
+    matchLabels:
+      pod-name: repos-minio-1
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: export-repos-minio-1
+  labels:
+    pod-name: repos-minio-1
+  annotations:
+    "volume.alpha.kubernetes.io/node-affinity": '{
+      "requiredDuringSchedulingIgnoredDuringExecution": {
+        "nodeSelectorTerms": [
+          { "matchExpressions": [
+              { "key": "kubernetes.io/hostname",
+                "operator": "In",
+                "values": ["youkube-02"]
+              }
+          ]}
+        ]}}'
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: minio
+  local:
+    path: /mnt/local-storage/export-repos-minio-1
