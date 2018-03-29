@@ -23,23 +23,21 @@ metadata:
   name: export-repos-minio-2
   labels:
     pod-name: repos-minio-2
-  annotations:
-    "volume.alpha.kubernetes.io/node-affinity": '{
-      "requiredDuringSchedulingIgnoredDuringExecution": {
-        "nodeSelectorTerms": [
-          { "matchExpressions": [
-              { "key": "kubernetes.io/hostname",
-                "operator": "In",
-                "values": ["youkube-01"]
-              }
-          ]}
-        ]}}'
 spec:
   capacity:
     storage: 2Gi
+  volumeMode: Filesystem
   accessModes:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: minio
   local:
     path: /mnt/local-storage/export-repos-minio-2
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - youkube-01

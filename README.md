@@ -68,7 +68,15 @@ kubectl apply -f local-volume/kafka/
 vagrant ssh youkube-02 --no-tty -c 'sudo mkdir -p /mnt/local-storage/prometheus-custom-db-prometheus-custom-0'
 vagrant ssh youkube-01 --no-tty -c 'sudo mkdir -p /mnt/local-storage/prometheus-k8s-db-prometheus-k8s-0'
 vagrant ssh youkube-02 --no-tty -c 'sudo mkdir -p /mnt/local-storage/prometheus-k8s-db-prometheus-k8s-1'
+
+# https://hub.kubeapps.com/charts/stable/minio with --namespace blobs --name repos
+vagrant ssh youkube-01 --no-tty -c 'sudo mkdir -p /mnt/local-storage/export-repos-minio-0'
+vagrant ssh youkube-02 --no-tty -c 'sudo mkdir -p /mnt/local-storage/export-repos-minio-1'
+vagrant ssh youkube-01 --no-tty -c 'sudo mkdir -p /mnt/local-storage/export-repos-minio-2'
+vagrant ssh youkube-02 --no-tty -c 'sudo mkdir -p /mnt/local-storage/export-repos-minio-3'
 ```
+
+
 
 ## Heapster
 
